@@ -23,7 +23,7 @@ function Particle(x,y,rad,vx,vy) {
 	//RENDER
 	//draws the particles/cells to screen
 	this.render = function() {
-
+		noStroke();
 		ellipse(
 			this.position.x,
 			this.position.y,
