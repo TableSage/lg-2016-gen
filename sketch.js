@@ -1,4 +1,12 @@
+//TODO
+//add unit collision between balls
+//add 'wander' behavior
+//acceleration changes??
+//coloration and shape (aesthetics)
+//sub-modules, create individualized 'tissues'
+
 var tissue = [];
+var inside,middle; //must be allocated as globals.
 
 function setup() {
   //Declare Window Size
@@ -7,8 +15,12 @@ function setup() {
   //disable stroke (for now)
   noStroke();
 
+  //declare colors
+  inside = color(4, 202, 0);
+  middle = color(4, 63, 230);
+
   //Contructor Function (generates a new tissue)
-  for (var i=0; i<50; i++) {
+  for (var i=0; i<200; i++) {
   	cell = new Particle(
   		random(0,width), //x position
   		random(0,height), //y position
@@ -19,18 +31,25 @@ function setup() {
   	tissue.push(cell);
   }
 
-} // END SETUP
+} // END SETUP /////////////////////////
 
 function draw() {
 	//clear background
-	background(50);
+	background(30);
+  noStroke();
 
-	//Runs Tissue Methods
+	//Runs Tissue Methods on every cell in tissue
 	for (var i=0; i<tissue.length; i++) {
+      fill(lerpColor(inside,middle,map(tissue[i].position.y,0,height,0,1)));
     	tissue[i].update();
-    	tissue[i].rebound();
-    	tissue[i].render();
-	}
+    	tissue[i].edges();
+
+      stroke(lerpColor(inside,middle,map(tissue[i].position.y,0,height,0,1)));
+      tissue[i].connections(tissue,50,3);// connections does not stroke automatically
+
+      //Always render last
+      tissue[i].render();
+      }
 } // END DRAW
 
 function mousePressed() {

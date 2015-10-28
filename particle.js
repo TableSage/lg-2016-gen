@@ -1,6 +1,7 @@
 function Particle(x,y,rad,vx,vy) {
 	this.position = createVector (x,y);
 	this.velocity = createVector (vx,vy);
+	this.acceleration = createVector (0.0,0.0);
 	this.radius = rad;
 	this.diameter = rad*2;
 
@@ -10,12 +11,17 @@ function Particle(x,y,rad,vx,vy) {
 	//handles movement and (collision detection?)
 	this.update = function() {
 
+		this.acceleration = createVector (random(-0.1,0.1),random(-0.1,0.1));
+
 		//updates position based on velocity
+		this.velocity.add(this.acceleration);
 		this.position.add(this.velocity);
+		this.velocity.limit(0.8); //limits max speed my god is this useful
+
 	}
 
-	//DISPLAY
-	//render particles/cells to screen
+	//RENDER
+	//draws the particles/cells to screen
 	this.render = function() {
 
 		ellipse(
@@ -26,24 +32,32 @@ function Particle(x,y,rad,vx,vy) {
 			);
 	}
 
-	this.rebound = function() {
-		if (this.position.x >= width - this.radius){
-			this.position.x = width - this.radius;
-			this.velocity.x = -1 * this.velocity.x;
+	//EDGES
+	//Bounce off or flow over edges
+	this.edges = function() {
+		if (this.position.x >= width+this.radius){
+			this.position.x = 0-this.radius+1;
 		}
-		if (this.position.x <= 0 + this.radius) {
-			this.position.x = 0 + this.radius;
-			this.velocity.x = -1 * this.velocity.x;
+		if (this.position.x <= 0-this.radius) {
+			this.position.x = width+this.radius-1;
 		}
-		if (this.position.y >= height - this.radius) {
-			this.position.y = height - this.radius;
-			this.velocity.y = -1 * this.velocity.y;
+		if (this.position.y >= height+this.radius) {
+			this.position.y = 0-this.radius+1;
 		}
-		if (this.position.y <= 0 + this.radius) {
-			this.position.y = 0 + this.radius;
-			this.velocity.y = -1 * this.velocity.y;
+		if (this.position.y <= 0-this.radius) {
+			this.position.y = height+this.radius-1;
 		}
 	}
 
-
+	//CONNECTIONS
+	//Draws connection lines between cells that are close to one another
+	this.connections = function(tissue,max,weight) {
+      for (var i=0; i<tissue.length; i++) {
+        range = dist(this.position.x,this.position.y,tissue[i].position.x,tissue[i].position.y);
+        if (range < max) {
+          strokeWeight(map(range,0,max,weight,0));
+          line(this.position.x,this.position.y,tissue[i].position.x,tissue[i].position.y)
+        } 
+      }
+	}
 }
