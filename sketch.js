@@ -1,7 +1,5 @@
 //TODO
-//add unit collision between balls
-//add 'wander' behavior
-//acceleration changes??
+//add unit collision between balls.. is this desireable?
 //coloration and shape (aesthetics)
 //sub-modules, create individualized 'tissues'
 
@@ -16,17 +14,17 @@ function setup() {
   noStroke();
 
   //declare colors
-  inside = color(4, 202, 0);
-  middle = color(4, 63, 230);
+  c1 = color(random(255),random(255),random(255));
+  c2 = color(random(255),random(255),random(255));
 
   //Contructor Function (generates a new tissue)
   for (var i=0; i<200; i++) {
   	cell = new Particle(
-  		random(0,width), //x position
-  		random(0,height), //y position
-  		random(3,8),//radius
-  		random(-1,1),//vel x
-  		random(-1,1)//vel y
+  		random(0,width),    //x position
+  		random(0,height),   //y position
+  		random(3,8),        //radius
+  		random(-1,1),       //vel x
+  		random(-1,1)        //vel y
   		);
   	tissue.push(cell);
   }
@@ -40,11 +38,11 @@ function draw() {
 
 	//Runs Tissue Methods on every cell in tissue
 	for (var i=0; i<tissue.length; i++) {
-      fill(lerpColor(inside,middle,map(tissue[i].position.y,0,height,0,1)));
+      fill(lerpColor(c1,c2,map(tissue[i].position.y,0,height,0,1)));
     	tissue[i].update();
     	tissue[i].edges();
 
-      stroke(lerpColor(inside,middle,map(tissue[i].position.y,0,height,0,1)));
+      stroke(lerpColor(c1,c2,map(tissue[i].position.y,0,height,0,1)));
       tissue[i].connections(tissue,50,3);// connections does not stroke automatically
 
       //Always render last

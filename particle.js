@@ -5,10 +5,8 @@ function Particle(x,y,rad,vx,vy) {
 	this.radius = rad;
 	this.diameter = rad*2;
 
-	// Class Methods
-
 	//UPDATE
-	//handles movement and (collision detection?)
+	//handles movement (position, velocity, acceleration)
 	this.update = function() {
 
 		this.acceleration = createVector (random(-0.1,0.1),random(-0.1,0.1));
