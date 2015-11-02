@@ -46,20 +46,35 @@ function Particle(x,y,rad,vx,vy,maxAcc) {
 
 	//INTERACTIONS
 	//Draws connection lines between cells that are close to one another
-	this.interactions = function(tissue,max,min) {
+	this.interactions = function(tissue,max,min,mult) {
       for (var i=0; i<tissue.length; i++) {
       	//calculate distance between each object
         range = dist(this.position.x,this.position.y,tissue[i].position.x,tissue[i].position.y);
         if (range > min && range < max) {
+
+        	//applies "network" effect with line strokes
         	strokeWeight(map(range,min,max,3,0))
         	line(this.position.x,this.position.y,tissue[i].position.x,tissue[i].position.y)
+
+
+        	//Pushes away from each other at a certain distance to prevent clumping lag
+        	if (range < min*mult){
+        	dest = createVector (tissue[i].position.x,tissue[i].position.y);
+        	dest.sub(this.position);
+        	dest.rotate(PI);
+			dest.setMag(0.1);
+
+
+			//Calculate and apply Acceleration
+			this.acceleration = createVector (dest.x,dest.y);
+			}
+
         }
-        //conditionally apply something if they are within range
       }
 	}
 
 	//EDGES
-	//Bounce off or flow over edges
+	//Bounce off or flow over edges (currently flow over)
 	this.edges = function() {
 		if (this.position.x >= width+this.radius){
 			this.position.x = 0-this.radius+1;

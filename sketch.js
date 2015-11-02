@@ -41,11 +41,11 @@ function draw() {
 	//Runs Tissue Methods on every cell in tissue
 	for (var i=0; i<tissue.length; i++) {
 
-    	tissue[i].update(attract,300,800);
+    	tissue[i].update(attract,500,800);
     	tissue[i].edges();
 
       stroke(lerpColor(c1,c2,map(tissue[i].position.y,0,height,0,1)));
-      tissue[i].interactions(tissue,50,8);//multipurpose interaction method
+      tissue[i].interactions(tissue,50,8,3);//multipurpose interaction method
 
       //Always declare fill then render last
       fill(lerpColor(c1,c2,map(tissue[i].position.y,0,height,0,1)));
