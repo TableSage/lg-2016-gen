@@ -1,17 +1,31 @@
-function Particle(x,y,rad,vx,vy) {
+function Particle(x,y,rad,vx,vy,maxAcc) {
 	this.position = createVector (x,y);
 	this.velocity = createVector (vx,vy);
 	this.acceleration = createVector (0.0,0.0);
 	this.radius = rad;
 	this.diameter = rad*2;
+	this.maxAcc = maxAcc;
 
 	//UPDATE
 	//handles movement (position, velocity, acceleration)
-	this.update = function() {
+	this.update = function(attract,inner,outer) {
 
-		this.acceleration = createVector (random(-0.1,0.1),random(-0.1,0.1));
+		if (attract == true) { //CONDITIONAL ATTRACTION TO CENTER
+			//Calculate destination vector
+			var dest = createVector (width/2, height/2); //must be a var declared every frame
+			//only accelerate if destination is near but not too close.
+			var distance = this.position.dist(dest)
+			if (distance < outer && distance > inner) {
+				dest.sub(this.position);
+				dest.setMag(maxAcc);
 
-		//updates position based on velocity
+				//Calculate and apply Acceleration
+				this.acceleration = createVector (dest.x,dest.y);
+			}
+			else {this.acceleration = createVector(random(-this.maxAcc,this,maxAcc),random(-this.maxAcc,this,maxAcc))};
+		}
+
+		//Updates position based on velocity
 		this.velocity.add(this.acceleration);
 		this.position.add(this.velocity);
 		this.velocity.limit(0.8); //limits max speed my god is this useful
@@ -30,6 +44,20 @@ function Particle(x,y,rad,vx,vy) {
 			);
 	}
 
+	//INTERACTIONS
+	//Draws connection lines between cells that are close to one another
+	this.interactions = function(tissue,max,min) {
+      for (var i=0; i<tissue.length; i++) {
+      	//calculate distance between each object
+        range = dist(this.position.x,this.position.y,tissue[i].position.x,tissue[i].position.y);
+        if (range > min && range < max) {
+        	strokeWeight(map(range,min,max,3,0))
+        	line(this.position.x,this.position.y,tissue[i].position.x,tissue[i].position.y)
+        }
+        //conditionally apply something if they are within range
+      }
+	}
+
 	//EDGES
 	//Bounce off or flow over edges
 	this.edges = function() {
@@ -45,17 +73,5 @@ function Particle(x,y,rad,vx,vy) {
 		if (this.position.y <= 0-this.radius) {
 			this.position.y = height+this.radius-1;
 		}
-	}
-
-	//CONNECTIONS
-	//Draws connection lines between cells that are close to one another
-	this.connections = function(tissue,max,weight) {
-      for (var i=0; i<tissue.length; i++) {
-        range = dist(this.position.x,this.position.y,tissue[i].position.x,tissue[i].position.y);
-        if (range < max) {
-          strokeWeight(map(range,0,max,weight,0));
-          line(this.position.x,this.position.y,tissue[i].position.x,tissue[i].position.y)
-        } 
-      }
 	}
 }
